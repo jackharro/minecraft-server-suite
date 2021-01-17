@@ -1,54 +1,33 @@
 #!/bin/bash
-# minecraft-server-suite — Easily manage one or more Minecraft servers on a machine
-# Copyright (C) 2024 Jack Harrington
-# 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# 
-# Get a copy of the source at
-# https://github.com/jackharro/minecraft-server-suite
+# Minecraft service that starts the minecraft server in a tmux session
 
-mc_ver=$(basename "$(pwd)")
-MC_HOME="/home/minecraft/${mc_ver}"
-# do we really need a PID file?
+MC_HOME="/var/minecraft"
 MC_PID_FILE="$MC_HOME/minecraft-server.pid"
-# no, each server has mc_home/start
-# MC_START_CMD="java -Xmx8G -Xms256M -jar spigot.jar"
+MC_START_CMD="java -Xmx8G -Xms256M -jar spigot.jar"
 
-tmx_sckt="minecraft"
-tmx_sess=""
+TMUX_SOCKET="minecraft"
+TMUX_SESSION="minecraft"
 
 is_server_running() {
-	tmux -L ${tmx_sckt} has-session -t ${tmx_sess} > /dev/null 2>&1
+	tmux -L $TMUX_SOCKET has-session -t $TMUX_SESSION > /dev/null 2>&1
 	return $?
 }
 
 mc_command() {
 	cmd="$1"
-	tmux -L ${tmx_sckt} send-keys -t ${tmx_sess}.0 "$cmd" ENTER
+	tmux -L $TMUX_SOCKET send-keys -t $TMUX_SESSION.0 "$cmd" ENTER
 	return $?
 }
 
 start_server() {
-        # use tmux -L -has-session
 	if is_server_running; then
 		echo "Server already running"
 		return 1
 	fi
 	echo "Starting minecraft server in tmux session"
-	tmux -L ${tmx_sckt} new-session -c $MC_HOME -s ${tmx_sess} -d "$MC_START_CMD"
+	tmux -L $TMUX_SOCKET new-session -c $MC_HOME -s $TMUX_SESSION -d "$MC_START_CMD"
 
-	pid=$(tmux -L ${tmx_sckt} list-sessions -F '#{pane_pid}')
+	pid=$(tmux -L $TMUX_SOCKET list-sessions -F '#{pane_pid}')
 	if [ "$(echo $pid | wc -l)" -ne 1 ]; then
 		echo "Could not determine PID, multiple active sessions"
 		return 1
@@ -101,7 +80,7 @@ stop_server() {
 }
 
 reload_server() {
-	tmux -L ${tmx_sckt} send-keys -t ${tmx_sess}.0 "reload" ENTER
+	tmux -L $TMUX_SOCKET send-keys -t $TMUX_SESSION.0 "reload" ENTER
 	return $?
 }
 
@@ -111,7 +90,7 @@ attach_session() {
 		return 1
 	fi
 
-	tmux -L ${tmx_sckt} attach-session -t ${tmx_sess}
+	tmux -L $TMUX_SOCKET attach-session -t $TMUX_SESSION
 	return 0
 }
 
@@ -133,7 +112,7 @@ attach)
 	exit $?
 	;;
 *)
-	echo "Usage: ${0} <start|stop|reload|attach>"
+	echo "Usage: ${0} {start|stop|reload|attach}"
 	exit 2
 	;;
 esac

@@ -23,7 +23,7 @@
 
 mc_ver=$1
 shift
-command=$@
+command="$*"
 
 print_usage() {
     case "$MCCTL_USAGE_HINT" in
@@ -46,7 +46,7 @@ command:            One of start, stop, reload or attach or a Minecraft command.
 
     attach:         Attach to the version's tmux socket.
 
-    backup:         Snapshot the world's levelname. Used by cron.
+    snapshot:         Snapshot the world's levelname. Used by cron.
 
     Note that the Minecraft command can be sent as any number of words. It can
     optionally be surrounded in quotes."
@@ -56,7 +56,7 @@ command:            One of start, stop, reload or attach or a Minecraft command.
 }
 
 case "$mc_ver" in
-    start | stop | reload | attach | backup )
+    start | stop | reload | attach | snapshot )
         MCCTL_USAGE_HINT=wrong_order print_usage
     ;;
 esac
@@ -70,11 +70,17 @@ mc_home=/home/minecraft/game/"$mc_ver"
 bin_name=$(basename "$0")
 
 [ -d "$mc_home" ] || { echo \
-    "$bin_name: fatal: directory $mc_home does not exist" ; exit 1 }
+    "$bin_name: fatal: directory $mc_home does not exist or is not a directory" ; exit 1 }
 
 tmux_session=/home/minecraft/tmux/"$mc_ver"
 
 [ -d  $(dirname "$tmux_session") ] || { echo \
-    "$bin_name: fatal: $(dirname "$tmux_session") does not exist" ; exit 1 }
+    "$bin_name: fatal: $(dirname "$tmux_session") does not exist or is not a directory" ; exit 1 }
 
-
+case "$command" in
+    start) ;;
+    stop) ;;
+    restart) ;;
+    attach) ;;
+    *) ;;
+esac

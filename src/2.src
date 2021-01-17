@@ -1,0 +1,14 @@
+
+test_tmux_session() {
+    [ -e "$tmux_session" ]
+}
+
+start_tmux_session() {
+# Two cases: either start tmux session or send ./start to tmux session<F11><F7>
+    if test_tmux_session; then
+       echo "Server $mc_ver already running"
+       return 1
+    fi
+    [ -d "$socket" ] || mkdir "$socket"
+    tmux -S "$socket"
+}
