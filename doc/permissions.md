@@ -1,3 +1,4 @@
+
 Design Requirements
 ===================
 1. Use users to control file permissions
@@ -52,3 +53,71 @@ drwxrwx---+ 2 jackharro jackharro 4096 Dec 12 18:45 dir
 As expected, the group is now jackharro but g+rw is still applied. So what is the point of uid in the ACL?
 
 By the way, a touched dir/file has g+rw permissions.
+
+ACL Inheritance
+---------------
+
+The default: prefixed ACL data is inherited by a directory from its parent directory. A file's ACL is written at the creation of the file (at the time of the syscall. The logic is handled by linux). A file's ACL is not changed by setfacl when setfacl is used on its parent directory. So, b1.7.3 which was made when /home/minecraft had this ACL:
+
+```
+# file: /home/minecraft
+# owner: minecraft
+# group: minecraft
+user::rwx
+group::rwx
+other::---
+```
+
+still has this ACL:
+
+```
+# file: /home/minecraft/b1.7.3/
+# owner: minecraft
+# group: minecraft
+user::rwx
+group::rwx
+other::---
+```
+
+when setfacl is used on /home/minecraft to modify it to:
+
+```
+# file: /home/minecraft
+# owner: minecraft 
+# group: minecraft 
+# flags: -s-
+user::rwx
+user:minecraft:rwx 
+group::rwx
+group:minecraft:rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:minecraft:rwx
+default:group::rwx 
+default:group:minecraft:rwx
+default:mask::rwx
+default:other::--- 
+```
+
+while dir, which was made after /home/minecraft's ACL was modified, has this ACL automagically:
+```
+# file: dir
+# owner: jackharro 
+# group: minecraft 
+# flags: -s-
+user::rwx
+user:minecraft:rwx 
+group::rwx
+group:minecraft:rwx
+mask::rwx
+other::--:-
+default:user::rwx
+default:user:minecraft:rwx
+default:group::rwx 
+default:group:minecraft:rwx
+default:mask::rwx
+default:other::--- 
+```
+
+Any file in dir's tree will have rw access by the minecraft group
