@@ -1,5 +1,5 @@
 [Unit]
-Description=Minecraft Server
+Description=Minecraft %i server
 
 Wants=network.target
 After=network.target
@@ -11,19 +11,25 @@ Group=minecraft
 Nice=5
 TimeoutStopSec=90
 
+WorkingDirectory=/home/minecraft/%i
+# PIDFile=/var/minecraft/minecraft-server.pid
+
+# Script infers which version based on cwd?
+ExecStart=/usr/bin/minecraft-server start
+ExecReload=/usr/bin/minecraft-server reload
+ExecStop=/usr/bin/minecraft-server stop
+
+# File privileges (personally I prefer letting the kernel do this)
 ProtectHome=read-only
 ProtectSystem=full
 PrivateDevices=no
 NoNewPrivileges=yes
 PrivateTmp=no
 InaccessiblePaths=/root /sys /srv -/opt /media -/lost+found
-ReadWritePaths=/var/minecraft
+ReadWritePaths=/home/minecraft/%i
 
-WorkingDirectory=/var/minecraft
-PIDFile=/var/minecraft/minecraft-server.pid
-ExecStart=/var/minecraft/service.sh start
-ExecReload=/var/minecraft/service.sh reload
-ExecStop=/var/minecraft/service.sh stop
+
+# 
 
 [Install]
 WantedBy=multi-user.target
