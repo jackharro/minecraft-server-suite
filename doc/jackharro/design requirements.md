@@ -1,3 +1,11 @@
+Copyright (C)  2024 Jack Harrington.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+
 # Design Requirements
 
 jackharro likes to organise the features of a new project in a format like this file. It helps with scope creep and building an understanding of the codebase. This file will probably be made private and excluded by the gitignore.
