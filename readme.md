@@ -39,7 +39,7 @@ Important: for the minecraft user to maintain rwX access to files created by you
 
 4. `# mkdir /home/minecraft && chown minecraft:minecraft /home/minecraft`
 
-5. `chmod g+rwXs,o=- /home/minecraft`
+5. `chmod ug=rw,g+s,o=- /home/minecraft`
 
 6. `setfacl -m d:u::rwX,d:g::rwX,d:o::- /home/minecraft`
 
