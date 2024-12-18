@@ -33,7 +33,7 @@ Minecraft Server Suite has these features:
 
 `minecraft:x:1001:jackharro`
 
-Important: for the minecraft user to maintain rwX access to files created by your user in /home/minecraft, we need to set the ACL and set the group sticky bit
+Important: for the minecraft user to maintain rwX access to files created by your user in /home/minecraft, we need to edit the ACL and set the group sticky bit
 
 3. If /home/minecraft has any files, back it up and remove /home/minecraft
 
