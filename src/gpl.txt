@@ -1,4 +1,4 @@
-# minecraft-server-suite — configs and scripts to manage multiple Minecraft
+# minecraft-server-suite — Easily manage one or more Minecraft servers on a machine
 # servers on one machine
 #
 # Copyright (C) 2024 Jack Harrington

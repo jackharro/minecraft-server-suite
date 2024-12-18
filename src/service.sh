@@ -1,7 +1,5 @@
 #!/bin/bash
-# minecraft-server-suite — configs and scripts to manage multiple Minecraft
-# servers on one machine
-#
+# minecraft-server-suite — Easily manage one or more Minecraft servers on a machine
 # Copyright (C) 2024 Jack Harrington
 # 
 # This program is free software: you can redistribute it and/or modify

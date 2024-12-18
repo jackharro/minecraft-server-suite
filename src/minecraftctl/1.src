@@ -1,0 +1,66 @@
+#!/bin/bash
+# minecraft-server-suite — Easily manage one or more Minecraft
+# servers on a machine
+# Copyright (C) 2024 Jack Harrington
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# 
+# Get a copy of the source at
+# https://github.com/jackharro/minecraft-server-suite
+
+# input: /usr/local/bin/minecraftctl <version> <command>
+
+mc_ver=$1
+shift
+command=$@
+
+print_usage() {
+    case "$MCCTL_USAGE_HINT" in
+        wrong_order) hint="\n\nHint: the name of the Minecraft server/version cannot have the same name as a command" ;;
+    esac
+    usage="Usage: $(basename "$0") <version> <command>
+
+version:            The name of the Minecraft server that was set via systemctl.
+                    For example, minecraft@b1.7.3.service has the name 'b1.7.3'.
+
+command:            One of start, stop, reload or attach or a Minecraft command.
+
+    start:          Start the server. Used by systemd.
+
+    stop:           Stop the server and close the tmux session. Note that
+                    depending on the minecraft@.service configuration, systemd
+                    may restart the server once the process exits.
+
+    restart:		Stop then start the server to reload configuration.
+
+    attach:         Attach to the version's tmux socket.
+
+    Note that the Minecraft command can be sent as any number of words. It can
+    optionally be surrounded in quotes."
+
+    echo -e "${usage}${hint}"
+    exit 2
+}
+
+case "$mc_ver" in
+    start | stop | reload | attach )
+        MCCTL_USAGE_HINT=wrong_order print_usage
+    ;;
+esac
+
+if [ -z "$mc_ver" ]; then
+    print_usage
+fi
+
+echo Running minecraft $command
