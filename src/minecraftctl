@@ -21,15 +21,27 @@
 
 # input: /usr/local/bin/minecraftctl <version> <command>
 
-mc_ver=$1
+BIN_NAME=$(basename "$0")
+
+if [ "$*" = snapshot ]; then
+    for ver in $("")
+    exit 0
+fi
+
+# Expect working directory to be /home/minecraft
+
+MC_VER="$1"
+TMUX_SESSION="$(echo $MC_VER | tr . _)"
 shift
-command="$*"
+MC_COMMAND="$*"
 
 print_usage() {
     case "$MCCTL_USAGE_HINT" in
         wrong_order) hint="\n\nHint: The <version> and <command> paramaters may have been swapped.\nWarn: the name of the version cannot have the same name as a command." ;;
     esac
-    usage="Usage: $(basename "$0") <version> <command>
+    usage="Usage: $BIN_NAME <version> <command>
+                  $BIN_NAME snapshot
+
 
 version:            The name of the Minecraft server that was set via systemctl.
                     For example, minecraft@b1.7.3.service has the name 'b1.7.3'.
@@ -44,43 +56,37 @@ command:            One of start, stop, reload or attach or a Minecraft command.
 
     restart:        Stop then start the server to reload configuration.
 
-    attach:         Attach to the version's tmux socket.
+    attach:         Attach to the version's tmux session.
 
-    snapshot:         Snapshot the world's levelname. Used by cron.
-
-    Note that the Minecraft command can be sent as any number of words. It can
-    optionally be surrounded in quotes."
+    *:              Anything else will be sent to the Minecraft server"
 
     echo -e "${usage}${hint}"
     exit 2
 }
 
-case "$mc_ver" in
+mc_command() {
+	cmd="$1"
+	tmux -S tmux send-keys -t "$TMUX_SESSION" "$cmd" ENTER
+	return $?
+}
+
+case "$MC_VER" in
     start | stop | reload | attach | snapshot )
         MCCTL_USAGE_HINT=wrong_order print_usage
     ;;
 esac
 
-if [ -z "$mc_ver" ]; then
+if [ -z "$MC_VER" ]; then
     print_usage
 fi
 
-
-mc_home=/home/minecraft/game/"$mc_ver"
-bin_name=$(basename "$0")
-
-[ -d "$mc_home" ] || { echo \
-    "$bin_name: fatal: directory $mc_home does not exist or is not a directory" ; exit 1 }
-
-tmux_session=/home/minecraft/tmux/"$mc_ver"
-
-[ -d  $(dirname "$tmux_session") ] || { echo \
-    "$bin_name: fatal: $(dirname "$tmux_session") does not exist or is not a directory" ; exit 1 }
-
-case "$command" in
-    start) ;;
-    stop) ;;
-    restart) ;;
-    attach) ;;
-    *) ;;
+case "$COMMAND" in
+    start) 
+            tmux -S tmux new-session -c "$MC_HOME"
+        
+        ;;
+    stop) tru e;;
+    restart) true ;;
+    attach) true ;;
+    *) true ;;
 esac

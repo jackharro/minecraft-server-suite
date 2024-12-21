@@ -1,4 +1,4 @@
-# minecraft-server-suite — configs and scripts to manage multiple Minecraft
+# minecraft-server-suite — Easily manage one or more Minecraft
 # servers on one machine
 #
 # Copyright (C) 2024 Jack Harrington
@@ -18,6 +18,7 @@
 # 
 # Get a copy of the source at
 # https://github.com/jackharro/minecraft-server-suite
+
 [Unit]
 Description=Minecraft Server
 
@@ -37,13 +38,12 @@ PrivateDevices=no
 NoNewPrivileges=yes
 PrivateTmp=no
 InaccessiblePaths=/root /sys /srv -/opt /media -/lost+found
-ReadWritePaths=/var/minecraft
+ReadWritePaths=/home/minecraft
 
-WorkingDirectory=/var/minecraft
-PIDFile=/var/minecraft/minecraft-server.pid
-ExecStart=/var/minecraft/service.sh start
-ExecReload=/var/minecraft/service.sh reload
-ExecStop=/var/minecraft/service.sh stop
+WorkingDirectory=/home/minecraft
+ExecStart=/usr/bin/minecraftctl %i start
+ExecReload=/usr/bin/minecraftctl %i restart
+ExecStop=/usr/bin/minecraftctl %i stop
 
 [Install]
 WantedBy=multi-user.target
